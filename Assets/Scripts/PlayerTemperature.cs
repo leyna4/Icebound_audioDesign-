@@ -22,23 +22,27 @@ public class PlayerTemperature : MonoBehaviour
 
     void Update()
     {
+        // IGLOO ÝÇÝ — MUTLAK ÖNCELÝK
         if (isInIgloo)
         {
             timeOutside = 0f;
+
             currentTemperature += heatIncreaseRate * Time.deltaTime;
+            currentTemperature = Mathf.Clamp(currentTemperature, 0, maxTemperature);
+
+            return; //ÇOK ÖNEMLÝ: dýþarý kodu ASLA çalýþmasýn
         }
-        else
+
+        //  DIÞARISI
+        timeOutside += Time.deltaTime;
+
+        if (timeOutside > coldDelay)
         {
-            timeOutside += Time.deltaTime;
+            float coldProgress = (timeOutside - coldDelay) / coldDelay;
+            coldProgress = Mathf.Clamp01(coldProgress);
 
-            if (timeOutside > coldDelay)
-            {
-                float coldProgress = (timeOutside - coldDelay) / coldDelay;
-                coldProgress = Mathf.Clamp01(coldProgress);
-
-                float currentColdRate = coldDecreaseRate * coldProgress;
-                currentTemperature -= currentColdRate * Time.deltaTime;
-            }
+            float currentColdRate = coldDecreaseRate * coldProgress;
+            currentTemperature -= currentColdRate * Time.deltaTime;
         }
 
         currentTemperature = Mathf.Clamp(currentTemperature, 0, maxTemperature);

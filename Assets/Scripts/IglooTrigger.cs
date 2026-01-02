@@ -4,6 +4,8 @@ public class IglooTrigger : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log("IGLOO TRIGGER ÇALIÞTI");
+
         Debug.Log("Triggera giren: " + other.name);
 
         if (other.CompareTag("Player"))
