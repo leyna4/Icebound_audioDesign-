@@ -7,32 +7,34 @@ public class IceChunk : MonoBehaviour
     public GameObject enemyPrefab;
     public float enemySpawnDelay = 2f;
 
+    bool isAttached = false;
+
+    public void StickToHook(Vector3 hookPos)
+    {
+        transform.position = hookPos;
+    }
+
     public void AttachToPlatform(Transform platform)
     {
-        Debug.Log("AttachToPlatform çaðrýldý");
+        if (isAttached) return;
+        isAttached = true;
 
         transform.SetParent(platform);
-        transform.position = platform.position;
 
-        IcePlatform icePlatform = platform.GetComponent<IcePlatform>();
-        if (icePlatform != null)
-        {
-            icePlatform.AddChunk();
-        }
-        else
-        {
-            Debug.LogError("IcePlatform script YOK!");
-        }
+        // platformun saðýna ekle
+        int index = platform.childCount - 1;
+        float offsetX = index * 1.5f;
+
+        transform.localPosition = new Vector3(offsetX, 0f, 0f);
 
         if (hasEnemy && enemyPrefab != null)
         {
-            StartCoroutine(SpawnEnemyDelayed());
+            StartCoroutine(SpawnEnemy());
         }
     }
 
-    IEnumerator SpawnEnemyDelayed()
+    IEnumerator SpawnEnemy()
     {
-        Debug.Log("Enemy spawn coroutine baþladý");
         yield return new WaitForSeconds(enemySpawnDelay);
         Instantiate(enemyPrefab, transform.position, Quaternion.identity);
     }
