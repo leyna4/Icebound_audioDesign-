@@ -846,7 +846,7 @@ Transform:
   m_GameObject: {fileID: 533247123}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2216,7 +2216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1464002050}
   - component: {fileID: 1464002051}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: IceChunkSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2538,7 +2538,7 @@ Transform:
   m_GameObject: {fileID: 1504510299}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1.41}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2671,7 +2671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7c5869b476be3149a1baeafda3f3e42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hookOrigin: {fileID: 533247124}
+  hookOrigin: {fileID: 172147418}
   lineRenderer: {fileID: 1504510301}
   iceLayer:
     serializedVersion: 2
@@ -2679,6 +2679,8 @@ MonoBehaviour:
   mainIcePlatform: {fileID: 1497849947}
   maxHookDistance: 15
   hookSpeed: 30
+  pullSpeed: 6
+  attachDistance: 0.5
 --- !u!1 &1693261992
 GameObject:
   m_ObjectHideFlags: 0
