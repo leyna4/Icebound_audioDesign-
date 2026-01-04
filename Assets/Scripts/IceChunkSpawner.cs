@@ -2,29 +2,82 @@ using UnityEngine;
 
 public class IceChunkSpawner : MonoBehaviour
 {
+    [Header("References")]
     public GameObject iceChunkPrefab;
-    public float spawnInterval = 8f;
-    public float spawnRadius = 8f;
-    public int safeChunksAtStart = 3;
+    public Transform mainIcePlatform;
 
-    int spawnedCount = 0;
+    [Header("Spawn Timing")]
+    public float spawnInterval = 4.5f;   //  DAHA SEYREK
+    public int maxIceOnScreen = 3;        //  DAHA AZ
+
+    [Header("Screen Bounds")]
+    public float minX = -7f;
+    public float maxX = 7f;
+    public float spawnYOffset = -6f;
+
+    [Header("Main Ice Safe Zone")]
+    public float mainIceHalfWidth = 1.5f;
+    public float sideMargin = 1.5f;
+    public float safeDistanceFromMainIce = 1.5f;
+
+    [Header("Spacing Control")]
+    public float minVerticalDistance = 1.8f; //  ice'ler arasý min mesafe
 
     void Start()
     {
-        InvokeRepeating(nameof(SpawnIceChunk), spawnInterval, spawnInterval);
+        InvokeRepeating(nameof(SpawnIce), 1f, spawnInterval);
     }
 
-    void SpawnIceChunk()
+    void SpawnIce()
     {
-        Vector2 pos = (Vector2)transform.position +
-                      Random.insideUnitCircle.normalized * spawnRadius;
+        // Ekranda fazla ice varsa spawnlama
+        if (GameObject.FindGameObjectsWithTag("IceChunk").Length >= maxIceOnScreen)
+            return;
 
-        GameObject chunkObj = Instantiate(iceChunkPrefab, pos, Quaternion.identity);
-        IceChunk chunk = chunkObj.GetComponent<IceChunk>();
+        // Son spawnlanan ice'le mesafe kontrolü
+        GameObject[] ices = GameObject.FindGameObjectsWithTag("IceChunk");
+        foreach (GameObject ice in ices)
+        {
+            if (Mathf.Abs(ice.transform.position.y - spawnYOffset) < minVerticalDistance)
+            {
+                return; // Çok yakýn  spawn iptal
+            }
+        }
 
-        chunk.hasEnemy = spawnedCount >= safeChunksAtStart && Random.value < 0.3f;
-        spawnedCount++;
+        bool spawnLeft = Random.value > 0.5f;
+        float mainIceX = mainIcePlatform.position.x;
 
-        Debug.Log("IceChunk spawnlandý. Enemy var mý: " + chunk.hasEnemy);
+        float spawnX;
+
+        if (spawnLeft)
+        {
+            spawnX = Random.Range(
+                minX,
+                mainIceX - mainIceHalfWidth - sideMargin
+            );
+        }
+        else
+        {
+            spawnX = Random.Range(
+                mainIceX + mainIceHalfWidth + sideMargin,
+                maxX
+            );
+        }
+
+        float spawnY = Mathf.Min(
+            spawnYOffset,
+            mainIcePlatform.position.y - safeDistanceFromMainIce
+        );
+
+        Vector3 spawnPos = new Vector3(spawnX, spawnY, 0f);
+
+        GameObject iceObj = Instantiate(iceChunkPrefab, spawnPos, Quaternion.identity);
+
+        IceChunk chunk = iceObj.GetComponent<IceChunk>();
+        if (chunk != null)
+        {
+            chunk.mainIcePlatform = mainIcePlatform;
+            chunk.mainIceHalfWidth = mainIceHalfWidth;
+        }
     }
 }

@@ -3,19 +3,18 @@ using System.Collections;
 
 public class HookController : MonoBehaviour
 {
-    [Header("Referanslar")]
     public Transform hookOrigin;
     public LineRenderer lineRenderer;
-    public LayerMask iceLayer; // Inspector'dan "Ice" seçili olduðundan emin ol
+    public LayerMask iceLayer;
     public Transform mainIcePlatform;
+    public Camera mainCamera;
 
-    [Header("Ayarlar")]
-    public float maxHookDistance = 20f; // Mesafeyi biraz artýrdýk
+    public float maxHookDistance = 20f;
     public float hookSpeed = 15f;
     public float pullSpeed = 10f;
-    public float attachDistance = 0.5f;
+    public float attachDistance = 0.4f;
 
-    private bool isBusy = false;
+    private bool isBusy;
 
     void Start()
     {
@@ -35,49 +34,36 @@ public class HookController : MonoBehaviour
     {
         isBusy = true;
 
-        // 1. Mouse Pozisyonu ve Yön Hesaplama
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorld.z = 0f; // Z eksenini sýfýrlýyoruz
+        mouseWorld.z = 0;
 
-        // Köken noktasýnýn Z eksenini de kontrol edelim (ÖNEMLÝ)
-        Vector3 originPos = hookOrigin.position;
-        originPos.z = 0f;
+        Vector3 origin = hookOrigin.position;
+        origin.z = 0;
 
-        Vector3 dir = (mouseWorld - originPos).normalized;
+        Vector3 dir = (mouseWorld - origin).normalized;
 
-        // 2. Raycast Atýþý
-        // Görselleþtirme: Sahne ekranýnda kýrmýzý bir çizgi çizer
-        Debug.DrawRay(originPos, dir * maxHookDistance, Color.red, 2f);
-
-        RaycastHit2D hit = Physics2D.Raycast(originPos, dir, maxHookDistance, iceLayer);
+        RaycastHit2D hit = Physics2D.Raycast(origin, dir, maxHookDistance, iceLayer);
 
         if (hit.collider != null)
         {
-            Debug.Log("Buz yakalandý: " + hit.collider.name);
             IceChunk chunk = hit.collider.GetComponent<IceChunk>();
-
             if (chunk != null)
             {
-                // Hedef noktayý buzun merkezi yapalým (daha güvenli)
-                Vector3 targetPoint = (Vector3)hit.point;
-                targetPoint.z = 0f;
+                Vector3 hitPoint = hit.point;
+                hitPoint.z = 0;
 
-                yield return StartCoroutine(ExtendHook(targetPoint));
+                yield return ExtendHook(hitPoint);
 
-                // Buzun fiziðini kapat (Kendi hareket etmesin)
-                Rigidbody2D rb = chunk.GetComponent<Rigidbody2D>();
-                if (rb != null) { rb.isKinematic = true; rb.velocity = Vector2.zero; }
+                chunk.AttachToHook(hookOrigin);
 
-                chunk.StickToHook(targetPoint);
-                yield return StartCoroutine(PullChunkToPlatform(chunk));
+                yield return PullToPlatform(chunk);
             }
         }
         else
         {
-            Debug.Log("Kanca hiçbir þeye çarpmadý.");
-            Vector3 targetPoint = originPos + dir * maxHookDistance;
-            yield return StartCoroutine(ExtendHook(targetPoint));
-            yield return StartCoroutine(RetractEmptyHook(targetPoint));
+            Vector3 missPoint = origin + dir * maxHookDistance;
+            yield return ExtendHook(missPoint);
+            yield return RetractHook(missPoint);
         }
 
         lineRenderer.enabled = false;
@@ -87,42 +73,68 @@ public class HookController : MonoBehaviour
     IEnumerator ExtendHook(Vector3 target)
     {
         lineRenderer.enabled = true;
-        float t = 0f;
+
+        float t = 0;
         float dist = Vector3.Distance(hookOrigin.position, target);
-        while (t < 1f)
+
+        while (t < 1)
         {
             t += Time.deltaTime * hookSpeed / dist;
+            Vector3 pos = Vector3.Lerp(hookOrigin.position, target, t);
+
             lineRenderer.SetPosition(0, hookOrigin.position);
-            lineRenderer.SetPosition(1, Vector3.Lerp(hookOrigin.position, target, t));
+            lineRenderer.SetPosition(1, pos);
+
             yield return null;
         }
     }
 
-    IEnumerator PullChunkToPlatform(IceChunk chunk)
+    IEnumerator PullToPlatform(IceChunk chunk)
     {
-        while (chunk != null && Vector3.Distance(chunk.transform.position, mainIcePlatform.position) > attachDistance)
+        while (chunk != null &&
+               Vector3.Distance(chunk.transform.position, mainIcePlatform.position) > attachDistance)
         {
-            // Buzu ve çizgiyi hareket ettir
-            chunk.transform.position = Vector3.MoveTowards(chunk.transform.position, mainIcePlatform.position, pullSpeed * Time.deltaTime);
+            chunk.transform.position = Vector3.MoveTowards(
+                chunk.transform.position,
+                mainIcePlatform.position,
+                pullSpeed * Time.deltaTime
+            );
 
             lineRenderer.SetPosition(0, hookOrigin.position);
             lineRenderer.SetPosition(1, chunk.transform.position);
+
             yield return null;
         }
 
-        if (chunk != null) chunk.AttachToPlatform(mainIcePlatform);
+        if (chunk != null)
+        {
+            chunk.AttachToPlatform(mainIcePlatform);
+            CameraZoomOut();
+        }
     }
 
-    IEnumerator RetractEmptyHook(Vector3 start)
+    IEnumerator RetractHook(Vector3 start)
     {
-        float t = 0f;
+        float t = 0;
         float dist = Vector3.Distance(start, hookOrigin.position);
-        while (t < 1f)
+
+        while (t < 1)
         {
             t += Time.deltaTime * hookSpeed / dist;
+            Vector3 pos = Vector3.Lerp(start, hookOrigin.position, t);
+
             lineRenderer.SetPosition(0, hookOrigin.position);
-            lineRenderer.SetPosition(1, Vector3.Lerp(start, hookOrigin.position, t));
+            lineRenderer.SetPosition(1, pos);
+
             yield return null;
+        }
+    }
+
+    void CameraZoomOut()
+    {
+        if (mainCamera.orthographic)
+        {
+            mainCamera.orthographicSize += 0.25f;
         }
     }
 }

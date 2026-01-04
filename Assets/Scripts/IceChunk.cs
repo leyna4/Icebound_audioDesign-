@@ -1,41 +1,100 @@
 using UnityEngine;
-using System.Collections;
 
 public class IceChunk : MonoBehaviour
 {
+    [Header("Enemy")]
     public bool hasEnemy;
     public GameObject enemyPrefab;
-    public float enemySpawnDelay = 2f;
 
-    bool isAttached = false;
+    [Header("Floating Movement")]
+    public float floatSpeed = 0.6f;
+    public float swayAmount = 0.3f;
+    public float swaySpeed = 1.2f;
 
-    public void StickToHook(Vector3 hookPos)
+    [Header("Main Ice Reference")]
+    public Transform mainIcePlatform;
+    public float mainIceHalfWidth = 1.5f; // orta alan güvenliði
+
+    private Rigidbody2D rb;
+    private float startX;
+    private bool isAttached = false;
+
+    void Awake()
     {
-        transform.position = hookPos;
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    public void AttachToPlatform(Transform platform)
+    void Start()
+    {
+        startX = transform.position.x;
+    }
+
+    void Update()
     {
         if (isAttached) return;
-        isAttached = true;
 
-        transform.SetParent(platform);
+        // Yukarý doðru süzülme
+        transform.Translate(Vector3.up * floatSpeed * Time.deltaTime);
 
-        // platformun saðýna ekle
-        int index = platform.childCount - 1;
-        float offsetX = index * 1.5f;
+        // Sað-sol salýným (ORTAYA GÝRMEZ)
+        float sway = Mathf.Sin(Time.time * swaySpeed) * swayAmount;
+        float newX = startX + sway;
 
-        transform.localPosition = new Vector3(offsetX, 0f, 0f);
-
-        if (hasEnemy && enemyPrefab != null)
+        if (mainIcePlatform != null)
         {
-            StartCoroutine(SpawnEnemy());
+            float minX = mainIcePlatform.position.x - mainIceHalfWidth;
+            float maxX = mainIcePlatform.position.x + mainIceHalfWidth;
+
+            // Orta alana girmesin
+            if (newX > minX && newX < maxX)
+            {
+                newX = startX;
+            }
+        }
+
+        transform.position = new Vector3(newX, transform.position.y, 0f);
+    }
+
+    void LateUpdate()
+    {
+        // Ekran dýþýna çýktýysa sil
+        if (Camera.main == null) return;
+
+        float camTop = Camera.main.orthographicSize + 2f;
+        if (transform.position.y > camTop)
+        {
+            Destroy(gameObject);
         }
     }
 
-    IEnumerator SpawnEnemy()
+    // Hook buza saplandýðýnda
+    public void AttachToHook(Transform hook)
     {
-        yield return new WaitForSeconds(enemySpawnDelay);
-        Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+        isAttached = true;
+
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.isKinematic = true;
+        }
+
+        transform.SetParent(hook);
+    }
+
+    // Platforma varýnca
+    public void AttachToPlatform(Transform platform)
+    {
+        isAttached = true;
+
+        transform.SetParent(platform);
+        transform.localPosition = Vector3.zero;
+
+        if (hasEnemy && enemyPrefab != null)
+        {
+            Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+        }
+
+        // Ana buz alaný geniþlesin
+        platform.localScale += new Vector3(0.15f, 0.15f, 0f);
     }
 }
