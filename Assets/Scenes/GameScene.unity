@@ -385,6 +385,8 @@ GameObject:
   - component: {fileID: 145318339}
   - component: {fileID: 145318340}
   - component: {fileID: 145318341}
+  - component: {fileID: 145318342}
+  - component: {fileID: 145318343}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -511,7 +513,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &145318338
 BoxCollider2D:
@@ -604,6 +606,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackRange: 1.2
   attackDamage: 50
+--- !u!114 &145318342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145318332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffc34c55292e39e48a5d6a6e7a72d169, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  icePlatform: {fileID: 1497849947}
+--- !u!114 &145318343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145318332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8af3736f559a77642bf9c9a6c8032c20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boundaryCenter: {fileID: 1497849947}
+  boundaryRadius: 1
 --- !u!1 &172147417
 GameObject:
   m_ObjectHideFlags: 0
@@ -2191,6 +2220,73 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1381221781}
   m_CullTransparentMesh: 1
+--- !u!1 &1390277810
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1390277811}
+  - component: {fileID: 1390277812}
+  m_Layer: 0
+  m_Name: IceBoundary
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1390277811
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390277810}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0035, y: -0.008, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1497849947}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &1390277812
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390277810}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0021731977, y: 0.008691076}
+  serializedVersion: 2
+  m_Radius: 0.0671554
 --- !u!1 &1464002048
 GameObject:
   m_ObjectHideFlags: 0
@@ -2238,14 +2334,14 @@ MonoBehaviour:
   iceChunkPrefab: {fileID: 3113788344993563936, guid: 5e3a6bdd0b5c7c04589fbd80ea3eb320, type: 3}
   mainIcePlatform: {fileID: 1497849947}
   spawnInterval: 3
-  maxIceOnScreen: 4
+  maxIceOnScreen: 3
   minX: -7
   maxX: 7
   spawnYOffset: -6
-  mainIceHalfWidth: 2.5
-  sideMargin: 2.5
+  mainIceHalfWidth: 3
+  sideMargin: 1.5
   safeDistanceFromMainIce: 1.5
-  minVerticalDistance: 1.8
+  minVerticalDistance: 2
 --- !u!1 &1469937464
 GameObject:
   m_ObjectHideFlags: 0
@@ -2371,7 +2467,7 @@ GameObject:
   - component: {fileID: 1497849949}
   m_Layer: 0
   m_Name: IcePlatform
-  m_TagString: Untagged
+  m_TagString: IcePlatform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2442,6 +2538,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1464002050}
+  - {fileID: 1390277811}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1497849948
@@ -2501,8 +2598,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a4572ac5ec6db248ade7041f5d3297c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunkCount: 0
-  sizeIncrease: 0.3
+  growAmount: 0.15
 --- !u!1 &1504510299
 GameObject:
   m_ObjectHideFlags: 0
@@ -2669,7 +2765,7 @@ MonoBehaviour:
   iceLayer:
     serializedVersion: 2
     m_Bits: 1024
-  mainIcePlatform: {fileID: 1497849947}
+  mainIcePlatform: {fileID: 0}
   mainCamera: {fileID: 1328999515}
   maxHookDistance: 15
   hookSpeed: 30

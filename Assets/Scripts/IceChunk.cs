@@ -67,7 +67,7 @@ public class IceChunk : MonoBehaviour
         }
     }
 
-    // Hook buza saplandýðýnda
+    //  Hook buza saplandýðýnda
     public void AttachToHook(Transform hook)
     {
         isAttached = true;
@@ -75,13 +75,13 @@ public class IceChunk : MonoBehaviour
         if (rb != null)
         {
             rb.velocity = Vector2.zero;
-            rb.isKinematic = true;
+            rb.bodyType = RigidbodyType2D.Kinematic; //  daha güvenli
         }
 
         transform.SetParent(hook);
     }
 
-    // Platforma varýnca
+    //  Platforma varýnca
     public void AttachToPlatform(Transform platform)
     {
         isAttached = true;
@@ -94,7 +94,7 @@ public class IceChunk : MonoBehaviour
             Instantiate(enemyPrefab, transform.position, Quaternion.identity);
         }
 
-        // Ana buz alaný geniþlesin
+        //  Ana buz alaný geniþlesin
         platform.localScale += new Vector3(0.15f, 0.15f, 0f);
     }
 }

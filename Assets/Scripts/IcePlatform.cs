@@ -2,16 +2,11 @@ using UnityEngine;
 
 public class IcePlatform : MonoBehaviour
 {
-    public int chunkCount = 0;
-    public float sizeIncrease = 0.3f;
+    public float growAmount = 0.15f;
 
-    public void AddChunk()
+    public void Grow()
     {
-        chunkCount++;
+        transform.localScale += new Vector3(growAmount, growAmount, 0f);
 
-        transform.localScale +=
-            new Vector3(sizeIncrease, sizeIncrease, 0);
-
-        Debug.Log("Platform büyüdü. Chunk: " + chunkCount);
     }
 }
