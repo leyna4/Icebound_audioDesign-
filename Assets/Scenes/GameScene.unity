@@ -618,7 +618,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffc34c55292e39e48a5d6a6e7a72d169, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icePlatform: {fileID: 1497849947}
 --- !u!114 &145318343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -631,8 +630,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8af3736f559a77642bf9c9a6c8032c20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boundaryCenter: {fileID: 1497849947}
-  boundaryRadius: 1
 --- !u!1 &172147417
 GameObject:
   m_ObjectHideFlags: 0
@@ -1790,7 +1787,7 @@ Transform:
   m_GameObject: {fileID: 1216784977}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.18, y: 2.16, z: 0.03973891}
+  m_LocalPosition: {x: 2.18, y: 2.16, z: -0.01}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2220,73 +2217,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1381221781}
   m_CullTransparentMesh: 1
---- !u!1 &1390277810
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1390277811}
-  - component: {fileID: 1390277812}
-  m_Layer: 0
-  m_Name: IceBoundary
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1390277811
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1390277810}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0035, y: -0.008, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1497849947}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &1390277812
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1390277810}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: -0.0021731977, y: 0.008691076}
-  serializedVersion: 2
-  m_Radius: 0.0671554
 --- !u!1 &1464002048
 GameObject:
   m_ObjectHideFlags: 0
@@ -2538,7 +2468,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1464002050}
-  - {fileID: 1390277811}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1497849948
@@ -2611,6 +2540,7 @@ GameObject:
   - component: {fileID: 1504510301}
   - component: {fileID: 1504510302}
   - component: {fileID: 1504510303}
+  - component: {fileID: 1504510304}
   m_Layer: 7
   m_Name: Hook
   m_TagString: Untagged
@@ -2626,8 +2556,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1504510299}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.02}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.019999996}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2679,7 +2609,6 @@ LineRenderer:
   m_SortingOrder: 10
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.1
@@ -2696,8 +2625,8 @@ LineRenderer:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.9926316
-        value: 0.989333
+        time: 0.73176736
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -2762,15 +2691,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hookOrigin: {fileID: 533247124}
   lineRenderer: {fileID: 1504510301}
-  iceLayer:
-    serializedVersion: 2
-    m_Bits: 1024
-  mainIcePlatform: {fileID: 0}
+  mainIcePlatform: {fileID: 1497849947}
   mainCamera: {fileID: 1328999515}
-  maxHookDistance: 15
-  hookSpeed: 30
-  pullSpeed: 10
-  attachDistance: 0.4
+  shootSpeed: 20
+  returnSpeed: 20
+  maxHookDistance: 10
 --- !u!212 &1504510303
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2823,6 +2748,41 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!58 &1504510304
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1504510299}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.13874596, y: -0.014102062}
+  serializedVersion: 2
+  m_Radius: 0.008333334
 --- !u!1 &1693261992
 GameObject:
   m_ObjectHideFlags: 0

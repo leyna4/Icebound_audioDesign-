@@ -79,5 +79,6 @@ public class IceChunkSpawner : MonoBehaviour
             chunk.mainIcePlatform = mainIcePlatform;
             chunk.mainIceHalfWidth = mainIceHalfWidth;
         }
+
     }
 }

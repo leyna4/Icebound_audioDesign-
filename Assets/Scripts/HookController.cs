@@ -1,138 +1,141 @@
 using UnityEngine;
-using System.Collections;
 
 public class HookController : MonoBehaviour
 {
-    public Transform hookOrigin;
+    [Header("References")]
+    public Transform hookOrigin;              // IcePlatform merkezi
     public LineRenderer lineRenderer;
-    public LayerMask iceLayer;
     public Transform mainIcePlatform;
     public Camera mainCamera;
 
-    public float maxHookDistance = 20f;
-    public float hookSpeed = 15f;
-    public float pullSpeed = 10f;
-    public float attachDistance = 0.4f;
+    [Header("Hook Settings")]
+    public float shootSpeed = 15f;
+    public float returnSpeed = 10f;
+    public float maxHookDistance = 5f;
 
-    private bool isBusy;
+    private bool isShooting;
+    private bool isReturning;
+
+    private Vector3 targetPosition;
+    private IceChunk caughtChunk;
 
     void Start()
     {
         lineRenderer.positionCount = 2;
-        lineRenderer.enabled = false;
+        lineRenderer.enabled = true;
+
+        // Hook baþlangýçta platformda dursun
+        transform.position = hookOrigin.position;
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && !isBusy)
+        if (Input.GetMouseButtonDown(0) && !isShooting && !isReturning)
         {
-            StartCoroutine(HookRoutine());
+            LaunchHook();
         }
+
+        HandleMovement();
+        DrawLine();
     }
 
-    IEnumerator HookRoutine()
+    void LaunchHook()
     {
-        isBusy = true;
-
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorld.z = 0;
+        mouseWorld.z = 0f;
 
-        Vector3 origin = hookOrigin.position;
-        origin.z = 0;
+        Vector3 dir = (mouseWorld - hookOrigin.position).normalized;
+        targetPosition = hookOrigin.position + dir * maxHookDistance;
 
-        Vector3 dir = (mouseWorld - origin).normalized;
-
-        RaycastHit2D hit = Physics2D.Raycast(origin, dir, maxHookDistance, iceLayer);
-
-        if (hit.collider != null)
-        {
-            IceChunk chunk = hit.collider.GetComponent<IceChunk>();
-            if (chunk != null)
-            {
-                Vector3 hitPoint = hit.point;
-                hitPoint.z = 0;
-
-                yield return ExtendHook(hitPoint);
-
-                chunk.AttachToHook(hookOrigin);
-
-                yield return PullToPlatform(chunk);
-            }
-        }
-        else
-        {
-            Vector3 missPoint = origin + dir * maxHookDistance;
-            yield return ExtendHook(missPoint);
-            yield return RetractHook(missPoint);
-        }
-
-        lineRenderer.enabled = false;
-        isBusy = false;
+        isShooting = true;
     }
 
-    IEnumerator ExtendHook(Vector3 target)
+    void HandleMovement()
     {
-        lineRenderer.enabled = true;
-
-        float t = 0;
-        float dist = Vector3.Distance(hookOrigin.position, target);
-
-        while (t < 1)
+        if (isShooting)
         {
-            t += Time.deltaTime * hookSpeed / dist;
-            Vector3 pos = Vector3.Lerp(hookOrigin.position, target, t);
-
-            lineRenderer.SetPosition(0, hookOrigin.position);
-            lineRenderer.SetPosition(1, pos);
-
-            yield return null;
-        }
-    }
-
-    IEnumerator PullToPlatform(IceChunk chunk)
-    {
-        while (chunk != null &&
-               Vector3.Distance(chunk.transform.position, mainIcePlatform.position) > attachDistance)
-        {
-            chunk.transform.position = Vector3.MoveTowards(
-                chunk.transform.position,
-                mainIcePlatform.position,
-                pullSpeed * Time.deltaTime
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                targetPosition,
+                shootSpeed * Time.deltaTime
             );
 
-            lineRenderer.SetPosition(0, hookOrigin.position);
-            lineRenderer.SetPosition(1, chunk.transform.position);
-
-            yield return null;
+            if (Vector3.Distance(transform.position, targetPosition) < 0.05f)
+            {
+                isShooting = false;
+                isReturning = true;
+            }
         }
-
-        if (chunk != null)
+        else if (isReturning)
         {
-            chunk.AttachToPlatform(mainIcePlatform);
-            CameraZoomOut();
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                hookOrigin.position,
+                returnSpeed * Time.deltaTime
+            );
+
+            // Buzu beraber çek
+            if (caughtChunk != null)
+            {
+                caughtChunk.transform.position = transform.position;
+            }
+
+            if (Vector3.Distance(transform.position, hookOrigin.position) < 0.05f)
+            {
+                FinishRetrieval();
+            }
         }
     }
 
-    IEnumerator RetractHook(Vector3 start)
+    void DrawLine()
     {
-        float t = 0;
-        float dist = Vector3.Distance(start, hookOrigin.position);
+        lineRenderer.SetPosition(0, hookOrigin.position);
+        lineRenderer.SetPosition(1, transform.position);
+    }
 
-        while (t < 1)
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!isShooting) return;
+
+        if (collision.CompareTag("IceChunk"))
         {
-            t += Time.deltaTime * hookSpeed / dist;
-            Vector3 pos = Vector3.Lerp(start, hookOrigin.position, t);
+            IceChunk chunk = collision.GetComponent<IceChunk>();
+            if (chunk == null) return;
 
-            lineRenderer.SetPosition(0, hookOrigin.position);
-            lineRenderer.SetPosition(1, pos);
+            isShooting = false;
+            isReturning = true;
 
-            yield return null;
+            caughtChunk = chunk;
+
+            Rigidbody2D rb = chunk.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.simulated = false;
+            }
         }
+    }
+
+    void FinishRetrieval()
+    {
+        isReturning = false;
+
+        if (caughtChunk != null)
+        {
+            caughtChunk.AttachToPlatform(mainIcePlatform);
+
+            // Kamera geri çekilsin
+            CameraZoomOut();
+
+            caughtChunk = null;
+        }
+
+        // Hook tekrar platforma sabitlensin
+        transform.position = hookOrigin.position;
     }
 
     void CameraZoomOut()
     {
-        if (mainCamera.orthographic)
+        if (mainCamera != null && mainCamera.orthographic)
         {
             mainCamera.orthographicSize += 0.25f;
         }
